@@ -68,7 +68,7 @@ public class VerificationCode extends AppCompatActivity {
                             Log.e("WeacApp", "Worked");
                             //progressDialog.dismiss();
                             JSONObject obj = new JSONObject(s);
-                            Log.e("WeacApp", s.toString());
+                            Log.e("WeacApp", "Response from server "+s.toString());
                             Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_LONG).show();
                         } catch (Exception e) {
                         }
