@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.skubag.waec">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+
+        <!-- Add Google Map Library -->
+        <uses-library android:name="com.google.android.maps" />
+
+        <!-- Google API Key -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key"/>
+
+        <activity
+            android:name="com.skubag.waec.activity.MainMenu"
+            android:label="@string/app_name"
+            android:screenOrientation="unspecified">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.skubag.waec.activity.verification.VerificationPhone"
+            android:screenOrientation="unspecified" />
+        <activity
+            android:name="com.skubag.waec.activity.verification.VerificationCode"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.skubag.waec.activity.profile.ProfilePurple"
+            android:screenOrientation="portrait" />
+        <!--<activity-->
+            <!--android:name="com.skubag.waec.activity.dashboard.DashboardGridFab"-->
+            <!--android:screenOrientation="portrait" />-->
+        <activity
+            android:name="com.skubag.waec.activity.dashboard.BuyWaecCard"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.skubag.waec.activity.dashboard.CheckWaecResults"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.skubag.waec.activity.login.LoginCardLight"
+            android:screenOrientation="portrait" />
+
+    </application>
+
+</manifest>
