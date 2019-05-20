@@ -1,9 +1,7 @@
-package com.material.components.activity.verification;
+package com.skubag.waec.activity.verification;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -11,15 +9,14 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import com.material.components.R;
-import com.material.components.helper.User;
-import com.material.components.activity.dashboard.DashboardGridFab;
-import com.material.components.activity.login.LoginCardLight;
-import com.material.components.data.SharedPrefManager;
-import com.material.components.helper.RequestHandler;
-import com.material.components.helper.URLs;
-import com.material.components.utils.Tools;
+import com.skubag.waec.R;
+import com.skubag.waec.activity.dashboard.DashboardGridFab;
+import com.skubag.waec.activity.login.LoginCardLight;
+import com.skubag.waec.activity.user.User;
+import com.skubag.waec.data.SharedPrefManager;
+import com.skubag.waec.helper.RequestHandler;
+import com.skubag.waec.helper.URLs;
+import com.skubag.waec.utils.Tools;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,19 +27,24 @@ import java.util.regex.Pattern;
 public class VerificationPhone extends AppCompatActivity {
 
     EditText editPhoneNumber;
-    Context context;
-    public String verify_code;
-    private View parent_view;
+    public String status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verification_phone);
         Tools.setSystemBarColor(this, R.color.grey_20);
-        context = getApplicationContext();
+
+
+     //   if the user is already logged in we will directly start the profile activity
+        if (SharedPrefManager.getInstance(this).isLoggedIn()) {
+            finish();
+            startActivity(new Intent(this, DashboardGridFab.class));
+            return;
+        }
 
         editPhoneNumber = findViewById(R.id.editPhoneNumber);
-        verify_code = "";
+        status = "";
 
         findViewById(R.id.continue_verification).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,7 +54,6 @@ public class VerificationPhone extends AppCompatActivity {
                 registerUser();
             }
         });
-
 
         findViewById(R.id.no_another_time).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,37 +65,37 @@ public class VerificationPhone extends AppCompatActivity {
             }
         });
 
-        //startActivity(new Intent(getApplicationContext(), VerificationCode.class));
     }
 
     private void registerUser() {
         final String phonenumber = editPhoneNumber.getText().toString().trim();
-        final String verify_code = "";
 
         //first we will do the validations
 
         if (TextUtils.isEmpty(phonenumber)) {
-            editPhoneNumber.setError("Please enter a valid Phone Number");
+            editPhoneNumber.setError("Please enter a valid phone number");
             editPhoneNumber.requestFocus();
-            Toast.makeText(getApplicationContext(), phonenumber, Toast.LENGTH_LONG).show();
             return;
         }
 
-        boolean check = false;
-        if(!Pattern.matches("[a-zA-Z]+", phonenumber)) {
-            //if(phonenumber.length() < 6 || phonenumber.length() > 13) {
-            if(phonenumber.length() != 10) {
-                check = false;
-                editPhoneNumber.setError("Not a Valid Number");
-                editPhoneNumber.requestFocus();
-                return;
+
+            boolean check = false;
+            if(!Pattern.matches("[a-zA-Z]+", phonenumber)) {
+                //if(phonenumber.length() < 6 || phonenumber.length() > 13) {
+                    if(phonenumber.length() != 9) {
+                    check = false;
+                        editPhoneNumber.setError("Not a Valid Number");
+                        editPhoneNumber.requestFocus();
+                        return;
+                } else {
+                    check = true;
+                }
             } else {
-                check = true;
+                check=false;
+                return;
             }
-        } else {
-            check=false;
-            return;
-        }
+
+
 
         //if it passes all the validations
 
@@ -110,7 +111,7 @@ public class VerificationPhone extends AppCompatActivity {
                 //creating request parameters
                 HashMap<String, String> params = new HashMap<>();
                 params.put("phonenumber", phonenumber);
-                params.put("verify_code", verify_code);
+                params.put("status", status);
 
                 //returning the response
                 return requestHandler.sendPostRequest(URLs.URL_REGISTER, params);
@@ -120,7 +121,7 @@ public class VerificationPhone extends AppCompatActivity {
             protected void onPreExecute() {
                 super.onPreExecute();
                 //displaying the progress bar while user registers on the server
-                progressBar = findViewById(R.id.progressBar);
+                progressBar = (ProgressBar) findViewById(R.id.progressBar);
                 progressBar.setVisibility(View.VISIBLE);
             }
 
@@ -144,17 +145,17 @@ public class VerificationPhone extends AppCompatActivity {
                         //creating a new user object
                         User user = new User(
                                 userJson.getString("phonenumber"),
-                                userJson.getString("verify_code")
+                                userJson.getString("status")
                         );
 
                         //storing the user in shared preferences
-                        SharedPrefManager.getInstance(getApplicationContext()).userLogin(user);
+                        //SharedPrefManager.getInstance(getApplicationContext()).userLogin(user);
 
                         //starting the profile activity
                         //finish();
                         startActivity(new Intent(getApplicationContext(), VerificationCode.class));
                     } else {
-                        Snackbar.make(parent_view, obj.getString("message"), Snackbar.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), obj.getString("message"), Toast.LENGTH_LONG).show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -168,4 +169,3 @@ public class VerificationPhone extends AppCompatActivity {
     }
 
 }
-
